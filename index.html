@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="statsPanel">
+            <h2>Player Stats</h2>
+            <p id="playerName">Name: Hero</p>
+            <p id="playerLevel">Level: 1</p>
+            <p id="playerHealth">Health: 100</p>
+            <p id="playerGold">Gold: 0</p>
+            <hr>
+            <div id="actionsPanel">
+                <h2>Actions</h2>
+                <button onclick="attack()">Attack</button>
+                <button onclick="inventory()">Inventory</button>
+                <!--button onclick="defend()">Defend</button>
+                <button onclick="useEquipment()">Use Equipment</button>
+                <button onclick="escape()">Escape</button-->
+            </div>
+        </div>
+        
+        <div id="log-container">
+            <p id="log-text"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

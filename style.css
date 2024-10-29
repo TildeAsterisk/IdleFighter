@@ -1,0 +1,66 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+#gameContainer {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    background-color: #fff;
+}
+
+#statsPanel, #actionsPanel {
+    height: 100%;
+}
+
+#statsPanel {
+    width: 25%;
+    border-right: 1px solid #ccc;
+}
+
+/*
+#actionsPanel {
+    width: 25%;
+    border-left: 1px solid #ccc;
+}
+*/
+
+#log-container {
+    position: absolute;
+    width: 20%;
+    height: 60vh;
+    bottom: 0;
+    right: 0;
+}
+
+#log-text {
+    position: fixed;
+    bottom: 0;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    margin: 10px;
+}
+
+button {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+}
+
+#gameCanvas {
+}
