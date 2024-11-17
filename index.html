@@ -8,20 +8,42 @@
 </head>
 <body>
     <div id="gameContainer">
-        <div id="statsPanel">
-            <h2>Player Stats</h2>
-            <p id="playerName">Name: Hero</p>
-            <p id="playerLevel">Level: 1</p>
-            <p id="playerHealth">Health: 100</p>
-            <p id="playerGold">Gold: 0</p>
-            <hr>
-            <div id="actionsPanel">
-                <h2>Actions</h2>
+        <div id="dashboard-panel">
+            <div id="player-stats">
+                <table id="stats-table">
+                    <tr>    <!-- HEADER -->
+                        <td></td>
+                        <td>Lvl</td>
+                        <td>HP</td>
+                        <td>Gold</td>
+                    </tr>
+
+                    <tr>
+                        <td><span id="playerName">Zionidas</span></td>
+                        <td><span id="playerLevel">1</span></td>
+                        <td><span id="playerHealth">100</span></td>
+                        <td><span id="playerGold">0</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><span id="enemyName">Enemy</span></td>
+                        <td><span id="enemyLevel">1</span></td>
+                        <td><span id="enemyHealth">100</span></td>
+                        <td><span id="enemyGold">0</span></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="actions-panel">
+                <b>Actions</b>
                 <button onclick="attack()">Attack</button>
                 <button onclick="inventory()">Inventory</button>
                 <!--button onclick="defend()">Defend</button>
                 <button onclick="useEquipment()">Use Equipment</button>
                 <button onclick="escape()">Escape</button-->
+            </div>
+            <b>Upgrades:</b>
+            <div id="upgrade-panel">
+                <table id="upgrade-list"></table>
             </div>
         </div>
         
