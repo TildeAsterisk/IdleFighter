@@ -6,11 +6,6 @@ Description:
 This is an idle game with many upgrades and effects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-////Defining Variables\\\\
-const logTextElement = document.getElementById('log-text');
-var logText = "";
-const upgradeListElement = document.getElementById('upgrade-list');
-
 ////Common Functions\\\\
 function WriteToLog(inpTxt){
     logText+="<br>"+inpTxt;
@@ -30,14 +25,22 @@ function generateRandomEnemyName() {
 
 
 //#region Defining Classes\\\\
+class Stat {
+    constructor(name, value) {
+        this.name=name;
+        this.value=value;
+    }
+}
+
 class Player {
     constructor(name) {
         this.name = name;
         this.level = 1;
         this.health = 100;
         this.gold = 0;
-        this.attackPower = 10;
+        this.attackPower = 2;
         this.attackSpeed = 1;
+        this.defence = 10;
         this.lastAttackTime = 0; // Initialize to current timestamp
         this.attackCooldown=1000 / this.attackSpeed; //milliseconds per attack
         this.upgradesList = [];
@@ -70,6 +73,7 @@ class Player {
         this.gold += goldGained;
         WriteToLog(`${this.name} gained ${goldGained} pieces of gold.`);
     }
+
 }
 
 class Enemy {
@@ -120,33 +124,34 @@ class Upgrade{
 }
 //#endregion CLASSES \\
 
-const player = new Player('Hero');
-let enemy = new Enemy('Goblin', 50);
+
+
 
 //#region UI FUNCTIONS \\\
 function updateStats() {
-    document.getElementById('playerName').innerText = `${player.name}`;
-    document.getElementById('playerLevel').innerText = `${player.level}`;
-    document.getElementById('playerHealth').innerText = `${player.health}`;
-    document.getElementById('playerGold').innerText = `${player.gold}`;
+    playerName_Element.innerText = `${player.name}`;
+    playerLevel_Element.innerText = `${player.level}`;
+    playerHealth_Element.innerText = `${player.health}`;
+    playerGold_Element.innerText = `${player.gold}`;
+    playerAttack_Element.innerText = `${player.attackPower}`;
+    playerAttackSpeed_Element.innerText = `${player.attackSpeed}`;
+    playerDefence_Element.innerText = `${player.defence}`;
 
-    document.getElementById('enemyName').innerText = `${enemy.name}`;
-    document.getElementById('enemyLevel').innerText = `${enemy.level}`;
-    document.getElementById('enemyHealth').innerText = `${enemy.health}`;
-    document.getElementById('enemyGold').innerText = `${enemy.gold}`;
+    document.getElementById('enemyName').innerText = `${player.target.name}`;
+    document.getElementById('enemyLevel').innerText = `${player.target.level}`;
+    document.getElementById('enemyHealth').innerText = `${player.target.health}`;
+    document.getElementById('enemyGold').innerText = `${player.target.gold}`;
 }
 
 function attack() {
-    player.attack(enemy);
+    player.attack(player.target);
     updateStats();
 }
 
-function inventory() {
-    WriteToLog(`${player.name} checks inventory. (Display in canvas GUI)`);
-}
 
 function spawnNewEnemy() {
     enemy = new Enemy(generateRandomEnemyName(), 50);
+    player.target=enemy;
     WriteToLog('A new enemy has appeared!');
 }
 
@@ -213,12 +218,12 @@ function GenerateRandomItem(itemType = null) {
     ];
     const randomDescription = itemDescriptions[Math.floor(Math.random() * itemDescriptions.length)];
 
-    // Random properties (attack, defense, and price)
+    // Random properties (attack, defence, and price)
     const attack = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
-    const defense = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+    const defence = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
     const price = Math.floor(Math.random() * (200 - 10 + 1)) + 10;
 
-    const randomNewItem = `{"name":"${fullItemName}", "description": "${randomDescription}", "price": "${price}", "attack": "${attack}", "defense": "${defense}", "itemType": "${randomItemType}"}`;
+    const randomNewItem = `{"name":"${fullItemName}", "description": "${randomDescription}", "price": "${price}", "attack": "${attack}", "defence": "${defence}", "itemType": "${randomItemType}"}`;
     
     // Construct the item template
     const itemTemplate = `
@@ -228,16 +233,16 @@ function GenerateRandomItem(itemType = null) {
                 <i>${randomDescription}</i>
             </td>
             <td>
-                ${attack}<b></b>⚔️<br>${defense}<b></b>🛡️
+                ${attack}<b></b>⚔️<br>${defence}<b></b>🛡️
             </td>
             <td>${price}&#164;</td>
             <td>
-                <input style="width:100%;" type="submit" name="buy" value="Buy!" />
+                <input style="width:100%;" type="submit" name="buy" value="Buy!" onclick="BuyItem(event)" />
                 <input type="hidden" name="name" value="${fullItemName}">
                 <input type="hidden" name="description" value="${randomDescription}">
                 <input type="hidden" name="price" value="${price}">
                 <input type="hidden" name="attack" value="${attack}">
-                <input type="hidden" name="defense" value="${defense}">
+                <input type="hidden" name="defence" value="${defence}">
                 <input type="hidden" name="itemType" value="${randomItemType}">
             </td>
         </tr>
@@ -245,12 +250,139 @@ function GenerateRandomItem(itemType = null) {
     return [randomNewItem, itemTemplate];
 }
 
+function BuyItem(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+
+    // Get the hidden input values
+    const itemName = event.target.parentElement.querySelector('input[name="name"]').value;
+    const itemDescription = event.target.parentElement.querySelector('input[name="description"]').value;
+    const itemPrice = event.target.parentElement.querySelector('input[name="price"]').value;
+    const itemAttack = event.target.parentElement.querySelector('input[name="attack"]').value;
+    const itemDefence = event.target.parentElement.querySelector('input[name="defence"]').value;
+    const itemType = event.target.parentElement.querySelector('input[name="itemType"]').value;
+
+    // Create the item object
+    const newItem = {
+        name: itemName,
+        description: itemDescription,
+        price: itemPrice,
+        attack: itemAttack,
+        defence: itemDefence,
+        itemType: itemType
+    };
+
+    // Add the item to the inventory array
+    player.inventory.push(newItem);
+
+    // Optionally, update the UI to reflect the new inventory
+    console.log('Item added to inventory:', newItem);
+    console.log('Current inventory:', player.inventory);
+    updateInventoryUI();
+}
+
+function drawInventoryTable() {
+    // Create the table element
+    const table = inventoryTable_Element;
+    items=player.inventory;
+    table.border = '1';
+
+    // Create the table header
+    const header = table.createTHead();
+    const headerRow = header.insertRow(0);
+    const headers = ['Name', 'Description', 'Price', 'Attack', 'Defence', 'Item Type'];
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.appendChild(document.createTextNode(headerText));
+        headerRow.appendChild(th);
+    });
+
+    // Create the table body
+    const tbody = table.createTBody();
+    items.forEach(item => {
+        const row = tbody.insertRow();
+        Object.values(item).forEach(value => {
+            const cell = row.insertCell();
+            cell.innerHTML = value;
+        });
+    });
+
+    // Append the table to the document body or a specific element
+    document.body.appendChild(table);
+}
+
+function updateInventoryUI() {
+    // Get the inventory table element (assuming it has an ID of 'inventory-table')
+    const table = inventoryTable_Element;
+
+    // Clear the existing table content
+    table.innerHTML = '';
+
+    // Create the table header
+    const header = table.createTHead();
+    const headerRow = header.insertRow(0);
+    const headers = ['Name', 'Description', 'Price', 'ATK', 'DEF'];
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.appendChild(document.createTextNode(headerText));
+        headerRow.appendChild(th);
+    });
+
+    // Create the table body
+    const tbody = table.createTBody();
+    
+    player.inventory.forEach(item => {
+        const row = tbody.insertRow();
+
+        const cell1 = row.insertCell();
+        cell1.innerHTML = item.name;
+
+        const cell2 = row.insertCell();
+        cell2.innerHTML = item.description;
+
+        const cell3 = row.insertCell();
+        cell3.innerHTML = item.price;
+
+        const cell4 = row.insertCell();
+        cell4.innerHTML = item.attack;
+
+        const cell5 = row.insertCell();
+        cell5.innerHTML = item.defence;
+
+        /*
+        Object.values(item).forEach(value => {
+            const cell = row.insertCell();
+            cell.innerHTML = value;
+        });
+        */
+    });
+    
+}
+
+
 //#endregion UI FUNCTIONS \\
 
 ////Initializing game state\\\\
+const logTextElement = document.getElementById('log-text');
+var logText = "";
+const upgradeListElement = document.getElementById('upgrade-list');
+const playerName_Element = document.getElementById('playerName');
+const playerLevel_Element = document.getElementById('playerLevel');
+const playerHealth_Element = document.getElementById('playerHealth');
+const playerGold_Element = document.getElementById('playerGold');
+const playerAttack_Element = document.getElementById('playerAttack');
+const playerAttackSpeed_Element = document.getElementById('playerAttackSpeed');
+const playerDefence_Element = document.getElementById('playerDefence');
+const inventoryTable_Element = document.getElementById('inventory-table');
 const EQUIPMENT_HEAD = 'head'; const EQUIPMENT_TORSO = 'torso'; const EQUIPMENT_LEGS = 'legs'; const EQUIPMENT_FEET = 'feet'; const EQUIPMENT_WEAPON = 'weapon';
-updateStats();
 let lastTime = 0;
+
+
+const player = new Player('Hero');
+let enemy = new Enemy('Goblin', 50);
+
+player.target=enemy;
+updateStats();
 
 //const player = new Player("Username");
 upgradeListElement.innerHTML = GenerateRandomItem()[1]+GenerateRandomItem()[1]+GenerateRandomItem()[1]+GenerateRandomItem()[1]+GenerateRandomItem()[1]+GenerateRandomItem()[1];
